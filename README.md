@@ -1,2 +1,7 @@
 # team-project
-Add your name to this file.
+Below are the individuals responsible for building the wordle application:
+
+Aadityaa Thaker
+Adam Bryfogle
+Hayden Price
+Jerilyn Challenger
