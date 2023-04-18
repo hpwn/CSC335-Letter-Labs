@@ -35,4 +35,8 @@ public class WordleController {
 	public String getSelectedWord() {
 		return wordleGame.getSelectedWord();
 	}
+	
+	public void resetGame() {
+        startNewGame();
+    }
 }
