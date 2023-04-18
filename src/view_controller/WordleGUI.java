@@ -24,6 +24,7 @@ public class WordleGUI extends Application {
 	private Button submitButton;
 	private Button newGameButton;
 	private Label[][] feedbackLabels;
+	private Label[][] guessLabels;
 	private int currentRow;
 
 	@Override
@@ -95,14 +96,19 @@ public class WordleGUI extends Application {
 			return;
 		}
 
+		
 		String feedback = wordleController.processGuess(guessField.getText());
+		// along with feedback, we need to be grabbing the user guess. 
+		String currentGuess = guessField.getText();
+		
+		System.out.println("here is the word: "+ guessField.getText());
 		if (feedback.equals("INVALID")) {
 			instructionsLabel.setText("Please enter a 5-letter word.");
 			guessField.clear();
 			return;
 		}
 
-		displayFeedback(feedback, currentRow);
+		displayFeedback(feedback, currentRow, currentGuess);
 
 		if (wordleController.isGameOver()) {
 			String correctWord = wordleController.getSelectedWord();
@@ -146,22 +152,43 @@ public class WordleGUI extends Application {
 
 	// Displays the feedback from the game controller for the user's guess in the
 	// feedback grid
-	private void displayFeedback(String feedback, int row) {
+	private void displayFeedback(String feedback, int row, String currentGuess) {
+		String answer = wordleController.getSelectedWord();
+		
 		for (int col = 0; col < feedback.length(); col++) {
-			char ch = feedback.charAt(col);
+			char ch = currentGuess.charAt(col);
+			System.out.println("current char: "+ ch);
+			System.out.println("selected word:" + wordleController.getSelectedWord() );
+			//char guessChar = currentGuess.charAt(col);
 			Label label = feedbackLabels[row][col];
+			//Label guessLabel = guessLabels[row][col]; 
 			label.setText(String.valueOf(ch));
-			switch (ch) {
-			case '■':
-				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: green;");
-				break;
-			case '□':
-				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: yellow;");
-				break;
-			case '·':
-				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: lightgray;");
-				break;
+			
+			// correct letter correct placement
+			if (currentGuess.charAt(col) == answer.charAt(col)) {	
+			    label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: green;");
 			}
+			// correct letter, wrong placement
+			else if (answer.contains(Character.toString(currentGuess.charAt(col)))) {
+			    label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: yellow;");
+			}
+			// letter not in word
+			else {
+			    label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: lightgray;");
+			}
+			
+			
+			
+//			case ch = 'd':
+//				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: green;");
+//				break;
+//			case '□':
+//				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: yellow;");
+//				break;
+//			case '·':
+//				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: lightgray;");
+//				break;
+			
 		}
 	}
 }

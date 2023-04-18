@@ -19,6 +19,7 @@ public class WordleGame {
 		guess = guess.toLowerCase().trim();
 
 		StringBuilder feedback = new StringBuilder();
+	
 		for (int i = 0; i < 5; i++) {
 			if (guess.charAt(i) == selectedWord.charAt(i)) {
 				feedback.append('■');
