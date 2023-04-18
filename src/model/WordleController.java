@@ -5,10 +5,12 @@ import java.util.Random;
 public class WordleController {
 	private Dictionary dictionary;
 	private WordleGame wordleGame;
+	private GameStats gameStats; // addeded new
 
 	public WordleController(String dictionaryFilePath) {
 		dictionary = new Dictionary(dictionaryFilePath);
 		startNewGame();
+		gameStats = new GameStats(); // Added new
 	}
 
 	public void startNewGame() {
@@ -35,8 +37,19 @@ public class WordleController {
 	public String getSelectedWord() {
 		return wordleGame.getSelectedWord();
 	}
-	
+
 	public void resetGame() {
-        startNewGame();
-    }
+		startNewGame();
+	}
+
+	// added for game stats
+	public void updateGameStats() {
+		gameStats.addGameStats(wordleGame.isGameWon(), 6 - wordleGame.getAttemptsRemaining(),
+				wordleGame.getCorrectLettersList());
+	}
+
+	// Added this getter method for gameStats
+	public GameStats getGameStats() {
+		return gameStats;
+	}
 }

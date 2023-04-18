@@ -1,16 +1,21 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WordleGame {
 	private String selectedWord;
 	private int attempts;
 	private boolean gameWon;
+	private List<Integer> correctLettersList;
 
 	public WordleGame(String selectedWord) {
 		this.selectedWord = selectedWord;
 		attempts = 6;
 		gameWon = false;
+		correctLettersList = new ArrayList<>();
 	}
-
+	
 	public String processGuess(String guess) {
 		if (!isValidGuess(guess)) {
 			return "INVALID";
@@ -37,8 +42,25 @@ public class WordleGame {
 			attempts--;
 		}
 
+		int correctLetters = getCorrectLetters(guess);
+        correctLettersList.add(correctLetters);
+        
 		return feedback.toString();
 	}
+	
+	private int getCorrectLetters(String guess) {
+        int count = 0;
+        for (int i = 0; i < guess.length(); i++) {
+            if (guess.charAt(i) == selectedWord.charAt(i)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+	public List<Integer> getCorrectLettersList() {
+        return correctLettersList;
+    }
 
 	private boolean isAlpha(String s) {
 		return s.chars().allMatch(Character::isLetter);
