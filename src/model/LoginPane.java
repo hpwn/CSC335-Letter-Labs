@@ -107,6 +107,8 @@ public class LoginPane {
 
             boolean matchFound = false;
             for (WordleAccount account : accounts) {
+            	System.out.println("current account username" + account.getUsername());
+            	System.out.println("current account password" + account.getPassword());
                 if (account.verifyCredentials(username, password)) {
                     System.out.println("Correct username and password");
                     matchFound = true;
@@ -136,31 +138,21 @@ public class LoginPane {
             pane.getChildren().removeAll(logoutButton);
             pane.add(buttonBox, 1, 4);
         });
-
-
+        
+        createAccountButton.setOnAction((ActionEvent e) -> {
+        	String username = getUsername();
+            String password = getPassword();
+            WordleAccount user = new WordleAccount(username, password);
+            saveUser(user);
+        });
 
 
 
         return pane;
     }
 
-    private void handleLogin() {
-        // Perform login authentication
-        
 
-        // Show the WordleGUI when login succeeds
-        if (true /* replace with actual login authentication */) {
-            Stage primaryStage = new Stage();
-            WordleGUI wordleGUI = new WordleGUI();
-            
-            wordleGUI.start(primaryStage);
-            primaryStage.show();
-        }
-    }
-    
-    public void setOnLogin(EventHandler<ActionEvent> eventHandler) {
-        loginButton.setOnAction(eventHandler);
-    }
+   
     
     private void saveUser(WordleAccount user) {
         try {
