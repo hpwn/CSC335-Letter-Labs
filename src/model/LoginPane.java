@@ -37,6 +37,9 @@ public class LoginPane {
     private LocalDate today = LocalDate.now();
     public Boolean loggedIn = false;
     
+    public WordleAccount accountLoggedIn; 
+    
+    
     private Pane loginPane;
     
     // potentially add the wordle game here in con
@@ -76,8 +79,25 @@ public class LoginPane {
     }
     
     public int getScore() {
-    	return 0;
+    	return accountLoggedIn.getGamesWon();
     }
+    
+    public void wonGame() {
+        if(accountLoggedIn != null) {
+            accountLoggedIn.wonGame();
+            List<WordleAccount> accounts = getAllAccounts();
+            for (int i = 0; i < accounts.size(); i++) {
+                WordleAccount account = accounts.get(i);
+                if (account.getUsername().equals(accountLoggedIn.getUsername())) {
+                    accounts.set(i, accountLoggedIn);
+                    break;
+                }
+            }
+            saveAllAccounts(accounts);
+            System.out.println("number of wins for " + accountLoggedIn.getUsername() + " is " + accountLoggedIn.getGamesWon());
+        }
+    }
+
     
     // create the login pane
     private Pane createLoginPane() {
@@ -107,16 +127,18 @@ public class LoginPane {
 
             boolean matchFound = false;
             for (WordleAccount account : accounts) {
-            	System.out.println("current account username" + account.getUsername());
-            	System.out.println("current account password" + account.getPassword());
+            	//System.out.println("current account username" + account.getUsername());
+            	//System.out.println("current account password" + account.getPassword());
                 if (account.verifyCredentials(username, password)) {
-                    System.out.println("Correct username and password");
+                    //System.out.println("Correct username and password");
                     matchFound = true;
                     loggedIn = true;
-                    label.setText("Welcome, " + username);
+                    accountLoggedIn = account;
+                    label.setText("Welcome, " + accountLoggedIn.getUsername() + " you have won " + accountLoggedIn.getGamesWon() + " games");
                     pane.getChildren().removeAll(usernameLabel, usernameField, passwordLabel, passwordField, buttonBox);
                    
                     pane.add(logoutButton, 1, 4);
+                    
                     break;
                 }
             }
@@ -156,6 +178,8 @@ public class LoginPane {
     
     private void saveUser(WordleAccount user) {
         try {
+        	System.out.println(user);
+        	System.out.println("saving " + user.getUsername() + " and the points of " + user.getGamesWon());
             List<WordleAccount> accounts = getAllAccounts();
             accounts.add(user);
             FileOutputStream fileOut = new FileOutputStream("accounts.ser");
@@ -163,7 +187,7 @@ public class LoginPane {
             out.writeObject(accounts);
             out.close();
             fileOut.close();
-            System.out.println("User serialized and saved");
+            System.out.println("attempting to save game stats");
         } catch (Exception e) {
             System.err.println("Error saving user: " + e.getMessage());
         }
@@ -188,6 +212,21 @@ public class LoginPane {
         }
         return accounts;
     }
+    
+    private void saveAllAccounts(List<WordleAccount> accounts) {
+        try {
+            FileOutputStream fileOut = new FileOutputStream("accounts.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(accounts);
+            out.close();
+            fileOut.close();
+            System.out.println("Saved all accounts.");
+        } catch(IOException i) {
+            i.printStackTrace();
+        }
+    }
+
+
 
 
 

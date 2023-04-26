@@ -261,11 +261,17 @@ public class WordleGUI extends Application {
 
 		//if game is over...
 		if (wordleController.isGameOver()) {
-			wordleController.updateGameStats();
-			showStatsPage();
+			//wordleController.updateGameStats();
+			//showStatsPage();
 			String correctWord = wordleController.getSelectedWord();
 			//print message win/lose
 			if (wordleController.isGameWon()) {
+				if( account.loggedIn ) {
+					// account is loginpane object
+					account.wonGame();
+					
+				}
+				
 				instructionsLabel
 						.setText("Congratulations! The word was: " + correctWord + ".");
 			} else {
@@ -308,7 +314,7 @@ public class WordleGUI extends Application {
 		String answer = wordleController.getSelectedWord();
 		for (int col = 0; col < feedback.length(); col++) {
 			char ch = currentGuess.charAt(col);
-			System.out.println("current char: " + ch);
+			//System.out.println("current char: " + ch);
 			System.out.println("selected word:" + wordleController.getSelectedWord());
 			// char guessChar = currentGuess.charAt(col);
 			Label label = feedbackLabels[row][col];
@@ -317,17 +323,17 @@ public class WordleGUI extends Application {
 
 			// correct letter correct placement
 			if (currentGuess.charAt(col) == answer.charAt(col)) {
-				System.out.println("right color");
+				//System.out.println("right color");
 				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: green;");
 			}
 			// correct letter, wrong placement
 			else if (answer.contains(Character.toString(currentGuess.charAt(col)))) {
-				System.out.println("right letter wrong placement");
+				//System.out.println("right letter wrong placement");
 				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: yellow;");
 			}
 			// letter not in word
 			else {
-				System.out.println("current guessed letter: " + Character.toString(currentGuess.charAt(col)) + "and answer letter: " + answer.charAt(col));
+				//System.out.println("current guessed letter: " + Character.toString(currentGuess.charAt(col)) + "and answer letter: " + answer.charAt(col));
 				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: lightgray;");
 			}
 
