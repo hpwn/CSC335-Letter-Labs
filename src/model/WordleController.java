@@ -10,7 +10,7 @@ public class WordleController {
 	public WordleController(String dictionaryFilePath) {
 		dictionary = new Dictionary(dictionaryFilePath);
 		startNewGame();
-		gameStats = new GameStats(); // Added new
+		GameStats gameStatss = new GameStats(); // Added new
 	}
 
 	public void startNewGame() {

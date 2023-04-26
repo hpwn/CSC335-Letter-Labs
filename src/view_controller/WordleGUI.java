@@ -12,22 +12,31 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.LoginPane;
 import model.WordleController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 public class WordleGUI extends Application {
 	private static final int MAX_ATTEMPTS = 6;
 
 	private WordleController wordleController;
-
+	public LoginPane account = new LoginPane();
 	private AnchorPane root;
+	private KeyboardPane keyboard;
 	private Label instructionsLabel;
 	private TextField guessField;
 	private Button submitButton;
@@ -36,16 +45,40 @@ public class WordleGUI extends Application {
 	private Label[][] guessLabels;
 	private int currentRow;
 	private BarChart<String, Number> guessDistributionBarChart;
+	
+	private MenuBar menu;
+	private Menu appearance;
+	private MenuItem lightMode;
+	private MenuItem darkMode;
 
 	@Override
 	public void start(Stage primaryStage) {
 		wordleController = new WordleController("/dictionary.txt");
 		layoutWindow();
 		applyTheme("light");
-
+				
 		primaryStage.setTitle("Wordle Game");
-		primaryStage.setScene(new Scene(root, 600, 400));
+		primaryStage.setScene(new Scene(root, 900, 500));
 		primaryStage.show();
+	}
+
+	private void buildMenu() {
+		// TODO Auto-generated method stub
+		menu = new MenuBar();
+		appearance = new Menu("Appearance");
+		lightMode = new MenuItem("Light Mode");
+		darkMode = new MenuItem("Dark Mode");
+		
+		appearance.getItems().addAll(lightMode, darkMode);
+		menu.getMenus().add(appearance);
+		
+		lightMode.setOnAction(event -> {
+			applyTheme("light");
+		});
+		
+		darkMode.setOnAction(event -> {
+			applyTheme("dark");
+		});
 	}
 
 	public static void main(String[] args) {
@@ -59,7 +92,26 @@ public class WordleGUI extends Application {
 		VBox vbox = new VBox(20);
 		vbox.setPrefSize(600, 400);
 		vbox.setAlignment(Pos.CENTER);
+		VBox accountBox = new VBox(20);
+		
+		AnchorPane.setRightAnchor(accountBox, 10.0);
+		
+		
+		
+		
+	    Line blackLine = new Line();
+	    blackLine.setStartX(601);
+	    blackLine.setStartY(0);
+	    blackLine.setEndX(601);
+	    blackLine.setEndY(500);
+	    blackLine.setStroke(Color.BLACK);
+	   
+		
+		
+		
+		accountBox.getChildren().add(account.getLoginPane());
 
+		buildMenu();
 		instructionsLabel = new Label("Guess the 5-letter word. You have 6 attempts.");
 		guessField = new TextField();
 		submitButton = new Button("Submit");
@@ -74,10 +126,10 @@ public class WordleGUI extends Application {
 		lightModeButton.setOnAction(event -> applyTheme("light"));
 		darkModeButton.setOnAction(event -> applyTheme("dark"));
 
+		BorderPane borderPane = new BorderPane();
 		GridPane gridPane = new GridPane();
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		
 		
 		//set up squares 
 		feedbackLabels = new Label[MAX_ATTEMPTS][5];
@@ -88,13 +140,36 @@ public class WordleGUI extends Application {
 				label.setAlignment(Pos.CENTER);
 				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: lightgray;");
 				feedbackLabels[row][col] = label;
-				gridPane.add(label, col, row);
+				gridPane.add(label, col+14, row);
 			}
 		}
+		borderPane.setCenter(gridPane);
+		
+		//set up keyboard
+		keyboard = new KeyboardPane();
+		BorderPane keys = keyboard.getKeyboardPane();
+		
 
-		vbox.getChildren().addAll(instructionsLabel, gridPane, guessField, submitButton, newGameButton, lightModeButton, darkModeButton);
+		HBox buttons = new HBox();
+		buttons.setAlignment(Pos.CENTER);
+		buttons.setSpacing(10);
+		buttons.getChildren().addAll(submitButton, newGameButton, lightModeButton, darkModeButton);
+		
+		vbox.getChildren().addAll(menu, instructionsLabel, borderPane, guessField, keys, buttons);
 		root.getChildren().add(vbox);
+		root.getChildren().add(accountBox);
+		root.getChildren().add(blackLine);
 
+		keyboard.setKeyPressAction(e -> {
+			typeKey((Button) e.getSource());
+		});
+	}
+	
+
+	private void typeKey(Button source) {
+		// TODO Auto-generated method stub
+		String letter = source.getText();
+		guessField.setText(guessField.getText() + letter);
 	}
 
 	//for stats at the end of a game
@@ -229,6 +304,7 @@ public class WordleGUI extends Application {
 
 	// Displays the feedback from the game controller for the user's guess in the feedback grid
 	private void displayFeedback(String feedback, int row, String currentGuess) {
+		currentGuess = currentGuess.toLowerCase();
 		String answer = wordleController.getSelectedWord();
 		for (int col = 0; col < feedback.length(); col++) {
 			char ch = currentGuess.charAt(col);
@@ -241,19 +317,23 @@ public class WordleGUI extends Application {
 
 			// correct letter correct placement
 			if (currentGuess.charAt(col) == answer.charAt(col)) {
+				System.out.println("right color");
 				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: green;");
 			}
 			// correct letter, wrong placement
 			else if (answer.contains(Character.toString(currentGuess.charAt(col)))) {
+				System.out.println("right letter wrong placement");
 				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: yellow;");
 			}
 			// letter not in word
 			else {
+				System.out.println("current guessed letter: " + Character.toString(currentGuess.charAt(col)) + "and answer letter: " + answer.charAt(col));
 				label.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: lightgray;");
 			}
 
 		}
 	}
+	
 	
 	//Light mode/dark mode
 	private void applyTheme(String theme) {
