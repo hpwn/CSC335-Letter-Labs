@@ -183,19 +183,26 @@ public class WordleGUI extends Application {
 		vbox.setAlignment(Pos.CENTER);
 		vbox.setStyle("-fx-background-color: #f2f2f2;");
 
-		Label statsLabel = new Label("Game Statistics");
+		Label statsLabel = new Label("Game Statistics for " + account.getUsername());
 		statsLabel.setPadding(new Insets(0, 0, 10, 0));
-		Label gamesPlayedLabel = new Label("Games played: " + wordleController.getGameStats().getGamesPlayed());
+		Label gamesPlayedLabel = new Label("Games played: " + account.accountLoggedIn.getGamesPlayed());
 		gamesPlayedLabel.setPadding(new Insets(0, 10, 0, 10));
-		Label gamesWonLabel = new Label("Games won: " + wordleController.getGameStats().getGamesWon());
+		Label gamesWonLabel = new Label("Games won: " + account.accountLoggedIn.getGamesWon());
 		gamesWonLabel.setPadding(new Insets(0, 10, 0, 10));
-		Label gamesLostLabel = new Label("Games lost: " + wordleController.getGameStats().getGamesLost());
-		gamesLostLabel.setPadding(new Insets(0, 10, 0, 10));
+		
+		int firstGuessWins = account.accountLoggedIn.gamesWonInOne();
+		int secondGuessWins = account.accountLoggedIn.gamesWonInTwo();
+		int thirdGuessWins = account.accountLoggedIn.gamesWonInThree();
+		int fourthGuessWins = account.accountLoggedIn.gamesWonInFour();
+		int fifthGuessWins = account.accountLoggedIn.gamesWonInFive();
+		int sixthGuessWins = account.accountLoggedIn.gamesWonInSix();
+		//Label gamesLostLabel = new Label("Games lost: " + wordleController.getGameStats().getGamesLost());
+		//gamesLostLabel.setPadding(new Insets(0, 10, 0, 10));
 
-		guessDistributionBarChart = createGuessDistributionGraph(wordleController.getGameStats().getAttemptsPerGame()); //for the bar graph
+		//guessDistributionBarChart = createGuessDistributionGraph(wordleController.getGameStats().getAttemptsPerGame()); //for the bar graph
 
-		vbox.getChildren().addAll(statsLabel, gamesPlayedLabel, gamesWonLabel, gamesLostLabel,
-				guessDistributionBarChart);
+		vbox.getChildren().addAll(statsLabel, gamesPlayedLabel, gamesWonLabel
+				);
 
 		Scene statsScene = new Scene(vbox, 600, 400);
 		statsStage.setScene(statsScene);
@@ -260,15 +267,20 @@ public class WordleGUI extends Application {
 		displayFeedback(feedback, currentRow, currentGuess);
 
 		//if game is over...
-		if (wordleController.isGameOver()) {
+		if (wordleController.isGameOver() ) {
+			account.playedGame();
 			//wordleController.updateGameStats();
-			//showStatsPage();
+			showStatsPage();
 			String correctWord = wordleController.getSelectedWord();
 			//print message win/lose
 			if (wordleController.isGameWon()) {
 				if( account.loggedIn ) {
+					System.out.println("current row: " + currentRow);
 					// account is loginpane object
 					account.wonGame();
+					
+					account.guessesUsed(currentRow +1);  
+					
 					
 				}
 				

@@ -41,6 +41,10 @@ public class WordleController {
 	public void resetGame() {
 		startNewGame();
 	}
+	
+	public int guessesUsed() {
+		return wordleGame.getAttemptsRemaining() + 1;
+	}
 
 	// added for game stats
 	public void updateGameStats() {
