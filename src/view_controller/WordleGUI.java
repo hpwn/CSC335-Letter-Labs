@@ -13,6 +13,7 @@ import javafx.scene.chart.XYChart;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.LoginPane;
+import model.WavPlayer;
 import model.WordleController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -248,6 +249,8 @@ public class WordleGUI extends Application {
 
 	// Handles the submit button click, processing the user's guess and updating the game state
 	private void handleSubmit() {
+		WavPlayer gameSound = new WavPlayer();
+		
 		if (currentRow >= MAX_ATTEMPTS) {
 			startNewGame();
 			return;
@@ -286,9 +289,13 @@ public class WordleGUI extends Application {
 				
 				instructionsLabel
 						.setText("Congratulations! The word was: " + correctWord + ".");
+				// play win sound
+				gameSound.play("win.wav");
 			} else {
 				instructionsLabel
 						.setText("No more attempts. The word was: " + correctWord + ".");
+				// play lose sound
+				gameSound.play("lose.wav");
 			}
 			wordleController.startNewGame();
 			currentRow = 0;
